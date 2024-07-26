@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { Container, Grid, Typography, Button, Card, CardMedia, CircularProgress, Alert,TextField } from '@mui/material';
-import User from '../../models/user';
+
 
 const useStyles = styled((theme) => ({
   root: {
@@ -54,12 +54,7 @@ function DetailProduct() {
   }, [productId]);
   const handleAddToCart = async () => {
     const orderData = {
-      userId: User._id||generateNewUserId(), // Replace with actual user ID
-      productId: product?._id, // Use optional chaining to handle undefined product
-      orderDate: new Date().toISOString(),
-      quantity,
-      totalPrice: product?.price * quantity, // Use optional chaining to handle undefined product.price
-      status: ['confirmed']
+      // User
     };
   
     try {

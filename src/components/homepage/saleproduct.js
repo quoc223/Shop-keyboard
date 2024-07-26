@@ -1,28 +1,32 @@
 
 import "./style.scss"
-
+import item1 from "../../assets/main-item/akko-5075b-plus-s-dracula-castle-280x280.png"
+import item2 from "../../assets/main-item/akko-keycap-set-neon-07-280x280.png"
+import item3 from "../../assets/main-item/Akko-Hamster-X-wireless-Hima-01-280x280.png"
+import item4 from "../../assets/main-item/akko-cs-pom-switch-silver-ava-280x280.png"
+import item5 from "../../assets/main-item/day-cap-custom-AKKO-macaw-ava-280x280.png"
 import React from 'react';
 function SaleProduct(){
     var items = [
         {
             name:"Keyboard",
-            srcimg: "https://i.ibb.co/Rbkb3kN/M1-Banner-1400x510.png",          
+            srcimg: item1,          
         },
         {
             name:"Keycaps",
-            srcimg: "https://i.ibb.co/XpZWZxb/akko-clear-keycaps-set-v2-black-01-510x631-1-280x280.png"
+            srcimg: item2
         },
         {
             name:"Mouse",
-            srcimg:"https://i.ibb.co/GPdSPtg/AKKO-AG325-One-Piece-Zoro-07.png"
+            srcimg:item3
         },
         {
             name:"Switch",
-            srcimg:"https://i.ibb.co/bN1pnzb/akko-cs-pom-switch-silver-ava-280x280.png"
+            srcimg:item4
         },
         {
             name:"Accessories",
-            srcimg:"https://i.ibb.co/zQ06P4C/day-cap-custom-AKKO-midnight-ava-280x280.png"
+            srcimg:item5
         }
     ]
     return(
