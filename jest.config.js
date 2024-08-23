@@ -5,4 +5,6 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/(?!axios)/',
   ],
+  testEnvironment: 'node',
+  moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
 };

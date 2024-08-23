@@ -25,7 +25,7 @@ import {
     Keyboard as KeyboardIcon,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+const axios = require('axios').default;
 
 const settings = ["Profile", "Account"];
 
