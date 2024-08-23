@@ -1,5 +1,5 @@
 
-import "./style.scss"
+
 import item1 from "../../assets/main-item/akko-5075b-plus-s-dracula-castle-280x280.png"
 import item2 from "../../assets/main-item/akko-keycap-set-neon-07-280x280.png"
 import item3 from "../../assets/main-item/Akko-Hamster-X-wireless-Hima-01-280x280.png"

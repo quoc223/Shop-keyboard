@@ -43,7 +43,7 @@
     "start:react": "react-scripts start",
     "start:server": "node src/server/server.js",
     "build": "react-scripts build",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.cjs",
+     "test": "jest --config=./jest.config.cjs",
     "eject": "react-scripts eject"
     
   },
@@ -70,7 +70,7 @@
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",
     "babel-jest": "^29.7.0"
-  },
-  "type": "module"
+  }
+ 
   
 }

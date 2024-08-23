@@ -10,3 +10,4 @@
 - script: |
     npm run build
   displayName: 'Build for production'
+  

@@ -1,13 +1,13 @@
 module.exports = {
   transform: {
-    '^.+\\.jsx?$': 'babel-jest',
+    '^.+\\.[jt]sx?$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!axios)/',
+    '/node_modules/(?!(axios)/)', // Ensure axios is transformed by Babel
   ],
-  testEnvironment: 'node',
-  moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
+  moduleFileExtensions: ['js', 'jsx'],
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^axios$': require.resolve('axios'),
+    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js', // Map axios to CommonJS version
   },
 };

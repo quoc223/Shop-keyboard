@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-const App = (await import('./App.js')).default;
+import App from './App.js';
 
 test('renders learn react link', () => {
   render(<App />);
