@@ -1,6 +1,12 @@
 - script: |
-    npm cache clean --force
-    rm -rf node_modules
     npm install
     npm run build
-  displayName: 'Clean cache, reinstall and build'
+  displayName: 'npm install and build'
+
+- script: |
+    npm test
+  displayName: 'Run tests'
+  
+- script: |
+    npm run build
+  displayName: 'Build for production'
