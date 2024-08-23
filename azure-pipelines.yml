@@ -1,4 +1,6 @@
 - script: |
+    npm cache clean --force
+    rm -rf node_modules
     npm install
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'Clean cache, reinstall and build'
