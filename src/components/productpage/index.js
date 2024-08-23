@@ -9,7 +9,7 @@ const Product =()=>{
             <SaleProduct />
             <ListProduct />
             {/* <UploadImage /> */}
-            <h1>footer</h1>
+            
         </>
     )
 }

@@ -1,200 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Container,
   Grid,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
+  Box,
+  createTheme,
+  ThemeProvider,
+  LinearProgress 
 } from '@mui/material';
+import Chart from "../admin/chart";
+import LatestUpdates from './lateupdate';
+import DashboardMetrics from './chart/DashboardMetrics';
+import useAuth from './authentication/useAuth';
+import { Navigate } from 'react-router-dom';
+const theme = createTheme({
+  palette: {
+    primary: { main: '#1976d2' },
+    secondary: { main: '#f50057' },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+});
 
-const API_URL = 'http://localhost:3001/api/product/';
-
-function Admin() {
-  const [products, setProducts] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [product, setProduct] = useState({
-    id: null,
-    name: '',
-    description: '',
-    price: '',
-  });
-
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+const getChangeColor = (percentChange) => {
+  if (percentChange === null) return 'text.secondary';
+  return parseFloat(percentChange) < 0 ? 'error.main' : 'success.main';
+};
+const getArrowDirection = (percentChange) => {
+  if (percentChange === null) return '→'; // Default arrow for no data
+  return parseFloat(percentChange) < 0 ? '↓' : '↑';
+};
+function Dashboard() {
+  const [salesData, setSalesData] = useState(0);
+  const [purchaseChange, setPurchaseChange] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { isAuthenticated, isLoading } = useAuth();
   useEffect(() => {
-    axios.get(API_URL).then((response) => {
-      setProducts(response.data);
-    });
-  }, []);
+    if (isAuthenticated) {
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          const [salesResponse, purchaseResponse] = await Promise.all([
+            axios.get('http://localhost:3001/api/dashboard/sales-data', { withCredentials: true }),
+            axios.get('http://localhost:3001/api/get-user-purchase-change', { withCredentials: true })
+          ]);
 
-  const handleOpen = () => {
-    setOpen(true);
-    setProduct({ id: null, name: '', description: '', price: '' });
-  };
+          const totalAnnualIncome = salesResponse.data.reduce((acc, item) => acc + parseFloat(item.total_income), 0);
+          setSalesData(totalAnnualIncome);
+          setPurchaseChange(purchaseResponse.data);
+          setLoading(false);
+        } catch (err) {
+          setError('Error fetching data');
+          setLoading(false);
+        }
+      };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+      fetchData();
+    }
+  }, [isAuthenticated]);
 
-  const handleChange = (event) => {
-    setProduct({ ...product, [event.target.name]: event.target.value });
-  };
-
-  const handleAdd = () => {
-    axios.post(API_URL, product).then((response) => {
-      setProducts([...products, response.data]);
-      handleClose();
-    });
-  };
-
-  const handleEdit = (id) => {
-    const editProduct = products.find((product) => product.id === id);
-    setProduct(editProduct);
-    setOpen(true);
-  };
-
-  const handleUpdate = () => {
-    axios.put(`${API_URL}/${product.id}`, product).then((response) => {
-      const updatedProducts = products.map((p) =>
-        p.id === product.id ? response.data : p
-      );
-      setProducts(updatedProducts);
-      handleClose();
-    });
-  };
-
-  const handleDelete = (id) => {
-    axios.delete(`${API_URL}/${id}`).then(() => {
-      const updatedProducts = products.filter((product) => product.id !== id);
-      setProducts(updatedProducts);
-    });
-  };
+  if (isLoading) return <LinearProgress />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (loading) return <Typography>Loading dashboard data...</Typography>;
+  if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <Container maxWidth="lg">
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">Product Management</Typography>
-          <Button variant="contained" color="success" component={Link} to={ '/orderlist'}>
-        Manage Order
-        </Button>
-
-        <Button variant="contained" color="secondary">
-        Manage Orders
-        </Button>
-
-
-        </Toolbar>
-      </AppBar>
-      <Grid container spacing={3} style={{ marginTop: '1rem' }}>
-        <Grid item xs={12}>
-          <Paper>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>{product.name}</TableCell>
-                      <TableCell>{product.description}</TableCell>
-                      <TableCell>${product.price}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleEdit(product.id)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          onClick={() => handleDelete(product.id)}
-                          style={{ marginLeft: '0.5rem' }}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpen}
-              style={{ marginTop: '1rem' }}
-            >
-              Add Product
-            </Button>
-          </Paper>
-        </Grid>
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="lg">
+        <Grid container spacing={2}>
+          {/* Your existing grid items */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper elevation={3}>
+              <Box p={2}>
+                <Typography variant="subtitle2">TOTAL PROFIT</Typography>
+                <Typography variant="h4">{formatter.format(salesData)}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+        <Paper>
+          <Box p={2}>
+            <Typography variant="subtitle2">TOTAL CUSTOMERS</Typography>
+            <Typography variant="h4">{purchaseChange.CurrentMonthUsers}</Typography>
+            <Typography variant="body2" color={getChangeColor(purchaseChange?.PercentChange)}>{purchaseChange ? `${getArrowDirection(purchaseChange.PercentChange)} ${Math.abs(purchaseChange.PercentChange)}% Since last month` : 'No data'}</Typography>
+          </Box>
+        </Paper>
       </Grid>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{product.id ? 'Edit Product' : 'Add Product'}</DialogTitle>
-        <DialogContent>
-          <TextField
-            name="name"
-            label="Name"
-            value={product.name}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            name="description"
-            label="Description"
-            value={product.description}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            name="price"
-            label="Price"
-            value={product.price}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            type="number"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={product.id ? handleUpdate : handleAdd}
-            color="primary"
-          >
-            {product.id ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+          {/* Add more grid items for other metrics */}
+        </Grid>
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          <Grid item xs={12}>
+            <DashboardMetrics />
+          </Grid>
+          <Grid item xs={12}>
+            <Paper elevation={3} sx={{ p: 3 }}>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'medium' }}>Stock Analytics</Typography>
+              <Chart />
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'medium' }}>Latest Updates</Typography>
+              <LatestUpdates />
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </ThemeProvider>
   );
 }
 
-export default Admin;
+export default Dashboard;
